@@ -29,8 +29,38 @@ furnitureRoutes.post("/add",async (req,res)=>{
 //get All furniture Read All
 furnitureRoutes.get("/",async (req,res)=>{
     try{
-        const data=await FurnitureModel.find();
-    res.send({data:data});
+        const {category,company,sort,search,page,limit}=req.query;
+        const query={};
+        if(category) query.category=category;
+        if(company) query.company=company;
+        if(search) {
+            const searchQuery=new RegExp(search,'i');
+            query.$or=[
+                {name:searchQuery },
+                {description:searchQuery},
+                {category:searchQuery},
+                {company:searchQuery}
+            ];
+        }
+        const totalCount=await FurnitureModel.countDocuments(query);
+        const sortOptions={}
+        if(sort==='asc'){
+            sortOptions.price=1
+        }
+        if(sort==='desc'){
+            sortOptions.price=-1
+        }
+        const pageSize=limit;
+        
+        const skip=(page-1)*pageSize;
+        console.log(limit);
+        const data=await FurnitureModel.find(query).sort(sortOptions).skip(skip).limit(pageSize);
+        res.json({
+            total:totalCount,
+            page,
+            limit:pageSize,
+            data
+        })
     }
     catch(err){
         res.send({msg:"Error while Fetching All Furnitures",error:err});
