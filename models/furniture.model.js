@@ -6,6 +6,7 @@ const furnitureSchema=new mongoose.Schema({
     company:String,
     category:String,
     description:String,
+    stock:Number,
     image:[String]
 })
 
