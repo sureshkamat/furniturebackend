@@ -7,14 +7,15 @@ const furnitureRoutes=Router();
 //post furniture Create
 furnitureRoutes.post("/add",async (req,res)=>{
     try{
-        const {name,price,company,category,description,image}=req.body;
+        const {name,price,company,category,description,image,stock}=req.body;
     const new_furniture=new FurnitureModel({
         name,
         price,
         company,
         category,
         description,
-        image
+        image,
+        stock
     })
     await new_furniture.save();
     res.send({msg:"New Furniture added",furniture:new_furniture});
