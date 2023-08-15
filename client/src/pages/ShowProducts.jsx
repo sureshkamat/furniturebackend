@@ -4,10 +4,12 @@ import {
     Td,
     Th,
     Thead,
-    Tr
+    Tr,
+    useDisclosure
 } from "@chakra-ui/react";
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import EditModel from "../components/EditModel";
 const ShowProducts = () => {
     const [data, setData] = useState([])
     const [page,setPage]=useState(1);
@@ -17,6 +19,7 @@ const ShowProducts = () => {
     const [company,setCompany]=useState();
     const [category,setCategory]=useState();
     const [search,setSearch]=useState();
+    const { isOpen, onOpen, onClose } = useDisclosure()
     const getData = () => {
         const params = {
             page,
@@ -41,6 +44,7 @@ const ShowProducts = () => {
     useEffect(() => {
         getData();
     }, [page,limit,sort,category,company,search])
+
     const handleDelete=(id)=>{
         axios.delete(`http://localhost:5000/furnitures/delete/${id}`)
         .then((res)=>{
@@ -82,7 +86,7 @@ const ShowProducts = () => {
                 </Select>
             </Flex>
             <Box mt={10}>
-                <Table>
+                <Table variant='striped'>
                     <Thead>
                         <Tr>
                             <Th>S.No</Th>
@@ -108,18 +112,23 @@ const ShowProducts = () => {
                                         <Td>{el.category}</Td>
                                         <Td>{el.company}</Td>
                                         <Td>{el.stock}</Td>
-                                        <Td>{el.description}</Td>
+                                        <Td>{el.description.slice(0, 50)}...</Td>
                                         <Td><Grid templateColumns="repeat(2, 1fr)">
                                             {el.image.map((ell)=>{
                                             return (
                                                 <a href={ell} target="_blank">
-                                                    <img src={ell} href={ell} width={50}/>
+                                                    <img src={ell} href={ell} width={100}/>
                                                 </a>
                                             )
                                         })}
                                         </Grid>
                                         </Td>
-                                        <Td><Button colorScheme='yellow' >Edit</Button></Td>
+                                        <Td><Button colorScheme='yellow' onClick={onOpen}>Edit</Button></Td>
+                                        <EditModel
+                                        isOpen={isOpen}
+                                        onClose={onClose}
+                                        data={el}
+                                        />
                                         <Td><Button colorScheme="red" onClick={()=>handleDelete(el._id)}>Delete</Button></Td>
                                     </Tr>
                                 )
